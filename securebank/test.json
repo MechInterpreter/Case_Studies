@@ -1,0 +1,10 @@
+{
+    "trans_date_trans_time": "2023-09-01 12:30:00",
+    "cc_num": "1234567890123456",
+    "unix_time": 1672531200,
+    "merchant": "merchant_name",
+    "category": "grocery",
+    "amt": 150.25,
+    "merch_lat": 40.730610,
+    "merch_long": -73.935242
+}
