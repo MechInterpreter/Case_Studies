@@ -1,10 +1,10 @@
 {
-    "trans_date_trans_time": "2023-09-01 12:30:00",
-    "cc_num": "1234567890123456",
-    "unix_time": 1672531200,
-    "merchant": "merchant_name",
-    "category": "grocery",
-    "amt": 150.25,
-    "merch_lat": 40.730610,
-    "merch_long": -73.935242
+    "trans_date_trans_time": "2020-12-19 23:11:36",
+    "cc_num": "374125201044065",
+    "unix_time": "1.387495e+09",
+    "merchant": "fraud_Turner and Sons",
+    "category": "shopping_pos",
+    "amt": "939.59",
+    "merch_lat": "39.201096",
+    "merch_long": "-77.301276"
 }
