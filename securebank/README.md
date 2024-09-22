@@ -55,7 +55,7 @@ Before setting up the system, ensure that you have the following:
 
 2. Install Git:
 
-    - Download and install Git from here.
+    - Download and install Git.
 
 ### Clone the Repository
 Copy and paste the following code into your command terminal:
