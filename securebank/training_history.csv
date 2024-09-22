@@ -1,0 +1,10 @@
+timestamp,version,accuracy,auc_pr,optimal_threshold,classification_report,confusion_matrix,precision_recall_curve,pr_curve_with_threshold,classification_report_file,confusion_matrix_file,model_path
+2024-09-21T14:29:26.634143,Dummy,0.9959203100564357,0.6506175251601104,0.8855692274442633,"              precision    recall  f1-score   support
+
+         0.0       1.00      1.00      1.00     29280
+         1.0       0.54      0.69      0.61       134
+
+    accuracy                           1.00     29414
+   macro avg       0.77      0.84      0.80     29414
+weighted avg       1.00      1.00      1.00     29414
+","[[29202, 78], [42, 92]]",Dummy_precision_recall_curve.png,Dummy_precision_recall_curve_with_optimal_threshold.png,Dummy_classification_report.txt,Dummy_confusion_matrix.txt,storage/models/artifacts/Dummy.joblib
