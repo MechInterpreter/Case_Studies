@@ -290,7 +290,7 @@ securebank/
 
 - app.py: Flask application defining API endpoints.
 - Dockerfile: Instructions to build the Docker image.
-- dataset_design.py: Script for designing and preprocessing datasets.
+- dataset_design.py: Module for designing and preprocessing datasets.
 - feature_extractor.py: Module for extracting features from raw data.
 - model_training.log: Log file capturing details of the model training process.
 - pipeline.py: Contains the Pipeline class handling model loading, training, prediction, and dataset generation via the create_data function.
