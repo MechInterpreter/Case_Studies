@@ -255,7 +255,7 @@ To view or retrieve these files, you can use the `docker cp` command to copy the
     - Maintained a catalog of pre-trained models stored in `storage/models/artifacts/`.
     - Enabled model selection by specifying the `version` parameter during the instantiation of the `Pipeline` class, allowing administrators to switch models without modifying the codebase.
 - Usage:
-    - Administrators can list available models and select the desired one by setting the appropriate `model_version` parameter and restarting the Docker container.
+    - Administrators can list available models and select the desired one by setting the appropriate `version` parameter and restarting the Docker container.
 ### R5: Audit System Performance
 - Implementation:
     - Integrated comprehensive logging mechanisms that record prediction results, system status, and errors.
