@@ -1,10 +1,9 @@
 {
-    "trans_date_trans_time": "2020-12-19 23:11:36",
-    "cc_num": "374125201044065",
-    "unix_time": "1.387495e+09",
-    "merchant": "fraud_Turner and Sons",
-    "category": "shopping_pos",
-    "amt": "939.59",
-    "merch_lat": "39.201096",
-    "merch_long": "-77.301276"
+    "unix_time": "1.314248",
+    "merchant": "0.001097",
+    "amt": "5.363884",
+    "merch_lat": "-0.521162",
+    "merch_long": "0.193988",
+    "transaction_hour": "23",
+    "time_since_last_trans": "0"
 }
