@@ -59,7 +59,9 @@ Before setting up the system, ensure that you have the following:
 
 ### Clone the Repository
 Copy and paste the following code into your command terminal:
+
 `git clone https://github.com/creating-ai-enabled-systems-fall-2024/chang-waldemar.git`
+
 `cd securebank`
 
 ### Build the Docker Image
@@ -73,9 +75,13 @@ Copy and paste the following code into your command terminal:
 `docker run -d -p 5000:5000 --name securebank-container securebank`
 
 Explanation:
+
 `-d`: Run the container in detached mode.
+
 `-p 5000:5000`: Map port 5000 of the host to port 5000 of the container.
+
 `--name securebank-container`: Assign a name to the running container.
+
 `securebank`: Specify the image to run.
 
 ## Usage
@@ -150,7 +156,7 @@ Copy and paste the following code into your command terminal:
     {
         "prediction": "fraud"
     }
-or
+
     {
         "prediction": "legitimate"
     }
@@ -189,7 +195,7 @@ Trained.joblib
 
 To select a specific model version, specify the version as a parameter when instantiating the Pipeline class. This can be done by running a Python command inside the Docker container.
 
-`docker exec -it securebank-container python -c "from pipeline import Pipeline; p = Pipeline(model_version='Advanced'); p.load_model()"`
+`docker exec -it securebank-container python -c "from pipeline import Pipeline; p = Pipeline(version='Trained'); p.load_model()"`
 
 3. Restart the Container to Apply Changes:
 
