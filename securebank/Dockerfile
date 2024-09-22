@@ -11,7 +11,7 @@ WORKDIR /app
 COPY . /app
 
 # Copy the model files into the container
-COPY storage/models/artifacts /app/securebank/storage/models/artifacts/
+COPY storage/models/artifacts /app/storage/models/artifacts/
 
 # Install any needed packages specified in requirements.txt
 RUN pip3 install -r requirements.txt
