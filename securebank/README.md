@@ -28,7 +28,6 @@ This is a transaction fraud detection system designed to identify and prevent fr
 - [Project Structure](#project-structure)
 - [Logging](#logging)
 - [License](#license)
-- [Contact](#contact)
 
 ## Features
 - Fraud Detection: Analyze transactions to identify potential fraud.
