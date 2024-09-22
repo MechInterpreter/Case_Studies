@@ -113,6 +113,7 @@ Once the Docker container is running, you can interact with the system through i
 ### Prepare a JSON Payload:
 
 Create a `test.json` file with the following structure:
+```
     {
         "unix_time": "1.314248",
         "merchant": "0.001097",
@@ -122,8 +123,9 @@ Create a `test.json` file with the following structure:
         "transaction_hour": "23",
         "time_since_last_trans": "0"
     }
-
+```
 Another acceptable, but suboptimal, structure (from Assignment 3) is as follows:
+```
     {
         "trans_date_trans_time": "2024-09-21 10:00:00",
         "cc_num": "1234567890123456",
@@ -134,7 +136,7 @@ Another acceptable, but suboptimal, structure (from Assignment 3) is as follows:
         "merch_lat": "37.7749",
         "merch_long": "-122.4194",
     }
-
+```
 Ideally, `time_since_last_trans` should be included, if available.
 
 ##### Field Descriptions:
@@ -184,13 +186,13 @@ Administrators can choose from a catalog of pre-trained models to deploy.
 - `docker exec -it securebank-container ls storage/models/artifacts/`
 
 ##### Example Output:
-
+```
 Dummy.joblib
 Extra Trees.joblib
 Logistic Regression.joblib
 Random Forest.joblib
 Trained.joblib
-
+```
 2. Select a Model:
 
 To select a specific model version, specify the version as a parameter when instantiating the Pipeline class. This can be done by running a Python command inside the Docker container.
