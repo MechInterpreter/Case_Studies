@@ -216,10 +216,10 @@ The `train_eval_model` and `get_history` functions within pipeline.py generate v
 
 ##### Generated Files Include:
 
-- Dummy_classification_report.txt
-- Dummy_confusion_matrix.txt
-- Dummy_precision_recall_curve.png
-- Dummy_precision_recall_curve_with_optimal_threshold.png
+- {version}_classification_report.txt
+- {version}_confusion_matrix.txt
+- {version}_precision_recall_curve.png
+- {version}_precision_recall_curve_with_optimal_threshold.png
 
 ##### Accessing These Files:
 
