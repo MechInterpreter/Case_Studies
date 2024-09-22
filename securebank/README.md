@@ -266,6 +266,7 @@ To view or retrieve these files, you can use the `docker cp` command to copy the
 
 ## Project Structure
 
+```
 securebank/
 ├── Dockerfile
 ├── Dummy_classification_report.txt
@@ -287,6 +288,7 @@ securebank/
 │   ├── __pycache__/
 │   └── Data_Pipeline_Design.md
 └── README.md
+```
 
 - app.py: Flask application defining API endpoints.
 - Dockerfile: Instructions to build the Docker image.
