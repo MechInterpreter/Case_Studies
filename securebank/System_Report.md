@@ -262,7 +262,7 @@ The SecureBank Transaction Fraud Detection System is meticulously designed to ad
 
     Administrators can list all available pre-trained models stored in the storage/models/artifacts/ directory.
 
-    `docker exec -it securebank-container ls storage/models/artifacts/`
+    - `docker exec -it securebank-container ls storage/models/artifacts/`
 
     Example Output:
 
@@ -279,7 +279,8 @@ The SecureBank Transaction Fraud Detection System is meticulously designed to ad
 
     To switch to the desired model version, administrators can execute the following command after ensuring that their desired model is saved in `storage/models/artifacts/`:
 
-    `docker exec -it securebank-container python -c "from pipeline import Pipeline; p = Pipeline(version='{Model Name}'); p.load_model()"`
+    - `docker exec -it securebank-container python -c "from pipeline import Pipeline; p = Pipeline(version='{Model Name}'); p.load_model()"`
+
     Description: This command initializes the Pipeline class with the default threshold and then calls the specified `version` argument to switch to the desired model. Replace `'{Model Name}'` with your desired model's name (e.g., `'Extra Trees'`).
 
     3. Restarting the Container:
@@ -492,7 +493,7 @@ Offline metrics are crucial during the model training and evaluation phases to a
 
 - **Precision:**  
   **Definition:** Precision indicates the proportion of true positive predictions among all positive predictions made by the model.
-  
+
   **Justification:**  
   Precision is crucial in scenarios where the cost of false positives is high. In fraud detection, a high precision means that when the model flags a transaction as fraudulent, it is likely to be correct, thereby reducing unnecessary investigations or customer inconvenience. This ensures operational efficiency and maintains customer trust by minimizing false alarms.
 
