@@ -203,15 +203,16 @@ The SecureBank Transaction Fraud Detection System is meticulously designed to ad
     - Scalability: Capable of handling increasing volumes of data as the number of transactions grows, maintaining performance without degradation.
     
     ##### Visual Representation:
-        ```mermaid
-        graph LR
-            A[Data Sources] --> B[Data Ingestion]
-            B --> C[Data Merging]
-            C --> D[Data Cleaning]
-            D --> E[Feature Engineering]
-            E --> F[Categorical Encoding]
-            F --> G[Processed Dataset]
-        ```
+
+    ```mermaid
+    graph LR
+        A[Data Sources] --> B[Data Ingestion]
+        B --> C[Data Merging]
+        C --> D[Data Cleaning]
+        D --> E[Feature Engineering]
+        E --> F[Categorical Encoding]
+        F --> G[Processed Dataset]
+    ```
 
     ##### Process Flow:
 
