@@ -492,6 +492,7 @@ Offline metrics are crucial during the model training and evaluation phases to a
 
 - **Precision:**  
   **Definition:** Precision indicates the proportion of true positive predictions among all positive predictions made by the model.
+  
   **Justification:**  
   Precision is crucial in scenarios where the cost of false positives is high. In fraud detection, a high precision means that when the model flags a transaction as fraudulent, it is likely to be correct, thereby reducing unnecessary investigations or customer inconvenience. This ensures operational efficiency and maintains customer trust by minimizing false alarms.
 
