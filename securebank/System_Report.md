@@ -662,39 +662,39 @@ The selection of an appropriate machine learning model is critical for achieving
 - AUC-PR: 0.69
 
 ##### Parameter Selection Rationale:
-To optimize the performance of the RandomForestClassifier, several hyperparameters were meticulously tuned. The selected values are tailored to balance model accuracy, computational efficiency, and the ability to handle class imbalances effectively.
+To optimize the performance of the `RandomForestClassifier`, several hyperparameters were meticulously tuned. The selected values are tailored to balance model accuracy, computational efficiency, and the ability to handle class imbalances effectively.
 
-- n_estimators = 200
+- `n_estimators = 200`
 
-    - Justification: The n_estimators parameter specifies the number of trees in the forest. A higher number of trees generally improves model performance by reducing variance and enhancing robustness. Setting this value to 200 strikes a balance between achieving high predictive accuracy and maintaining reasonable training times. It ensures that the ensemble has sufficient diversity without incurring excessive computational costs.
+    - Justification: The `n_estimators` parameter specifies the number of trees in the forest. A higher number of trees generally improves model performance by reducing variance and enhancing robustness. Setting this value to 200 strikes a balance between achieving high predictive accuracy and maintaining reasonable training times. It ensures that the ensemble has sufficient diversity without incurring excessive computational costs.
 
-- criterion = 'entropy'
+- `criterion = 'entropy'`
 
-    - Justification: The criterion determines the function used to measure the quality of a split. Using 'entropy' (information gain) instead of the default 'gini' can lead to better performance in scenarios with complex data distributions and class imbalances. 'Entropy' provides a more nuanced evaluation of splits, which can enhance the model's ability to capture intricate patterns in the data, especially important in fraud detection where fraudulent transactions are rare.
+    - Justification: The criterion determines the function used to measure the quality of a split. Using `'entropy'` (information gain) instead of the default `'gini'` can lead to better performance in scenarios with complex data distributions and class imbalances. `'Entropy'` provides a more nuanced evaluation of splits, which can enhance the model's ability to capture intricate patterns in the data, especially important in fraud detection where fraudulent transactions are rare.
 
-- min_samples_split = 10
+- `min_samples_split = 10`
 
-    - Justification: The min_samples_split parameter defines the minimum number of samples required to split an internal node. Setting this value to 10 helps prevent the model from creating overly specific rules that may capture noise in the training data, thereby reducing the risk of overfitting. It ensures that each split is based on a substantial number of samples, promoting generalization to unseen data.
+    - Justification: The `min_samples_split` parameter defines the minimum number of samples required to split an internal node. Setting this value to 10 helps prevent the model from creating overly specific rules that may capture noise in the training data, thereby reducing the risk of overfitting. It ensures that each split is based on a substantial number of samples, promoting generalization to unseen data.
 
-- bootstrap = True
+- `bootstrap = True`
 
     - Justification: Enabling bootstrap allows each tree in the forest to be trained on a random subset of the training data sampled with replacement. This technique introduces diversity among the trees, which is crucial for improving the ensemble's overall performance and reducing variance. It also aids in handling class imbalances by ensuring that each tree has a different perspective on the data.
 
-- min_samples_leaf = 4
+- `min_samples_leaf = 4`
 
-    - Justification: The min_samples_leaf parameter specifies the minimum number of samples required to be at a leaf node. Setting this to 4 ensures that the model does not create leaves that are too specific to particular samples, which can lead to overfitting. This constraint promotes smoother decision boundaries and enhances the model's ability to generalize from the training data to unseen instances.
+    - Justification: The `min_samples_leaf` parameter specifies the minimum number of samples required to be at a leaf node. Setting this to 4 ensures that the model does not create leaves that are too specific to particular samples, which can lead to overfitting. This constraint promotes smoother decision boundaries and enhances the model's ability to generalize from the training data to unseen instances.
 
-- class_weight = 'balanced_subsample'
+- `class_weight = 'balanced_subsample'`
 
-    - Justification: The class_weight parameter adjusts the weights inversely proportional to class frequencies within each bootstrap sample. Using 'balanced_subsample' is particularly effective in handling imbalanced datasets, such as fraud detection, by ensuring that minority classes receive adequate attention during training. This adjustment helps the model to better identify and predict rare events, improving overall detection performance.
+    - Justification: The `class_weight` parameter adjusts the weights inversely proportional to class frequencies within each bootstrap sample. Using `'balanced_subsample'` is particularly effective in handling imbalanced datasets, such as fraud detection, by ensuring that minority classes receive adequate attention during training. This adjustment helps the model to better identify and predict rare events, improving overall detection performance.
 
-- random_state = 42
+- `random_state = 42`
 
-    - Justification: Setting a fixed random_state ensures reproducibility of the model training process by controlling the randomness involved in data splitting and tree construction. This consistency is essential for verifying results, facilitating debugging, and enabling fair comparisons between different model iterations or configurations.
+    - Justification: Setting a fixed `random_state` ensures reproducibility of the model training process by controlling the randomness involved in data splitting and tree construction. This consistency is essential for verifying results, facilitating debugging, and enabling fair comparisons between different model iterations or configurations.
 
-- n_jobs = -1
+- `n_jobs = -1`
 
-    - Justification: The n_jobs parameter determines the number of CPU cores to use for training the model. Setting this to -1 instructs the algorithm to utilize all available cores, significantly speeding up the training process, especially when dealing with a large number of trees (n_estimators) or large datasets. This parallelization enhances computational efficiency without compromising model performance.
+    - Justification: The `n_jobs` parameter determines the number of CPU cores to use for training the model. Setting this to -1 instructs the algorithm to utilize all available cores, significantly speeding up the training process, especially when dealing with a large number of trees (`n_estimators`) or large datasets. This parallelization enhances computational efficiency without compromising model performance.
 
 ## Post-deployment Policies
 
