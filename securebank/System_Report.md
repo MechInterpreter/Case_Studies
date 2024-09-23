@@ -576,20 +576,34 @@ Training logs provide ongoing visibility into the model development lifecycle, a
 
 ##### Approach:
 - Correlation Analysis: Identified features with strong correlations to the target variable (fraudulent transactions) using the Pearson correlation matrix.
+  - Rationale: Utilizing Pearson correlation coefficients allows for the identification of linear relationships between features and the target variable (fraudulent transactions). Features with high absolute correlation values are likely to be more predictive, enabling the model to focus on the most influential variables. This reduces dimensionality, minimizes noise, and enhances model performance by eliminating irrelevant or redundant features. In fraud detection, certain transactional attributes (e.g., transaction amount, time since last transaction) inherently possess stronger predictive power. By conducting correlation analysis, we ensure that the selected features contribute meaningfully to the model's ability to distinguish between fraudulent and legitimate transactions, thereby improving accuracy and efficiency.
+
 - Data Analytics Insights: Incorporated insights from financial fraud patterns, such as transactions in rapid succession, to select relevant features.
+  - Rationale: Incorporating domain-specific insights into financial fraud patterns ensures that feature selection aligns with real-world behaviors. For instance, transactions occurring in rapid succession are indicative of potential fraud. Leveraging these insights allows for the inclusion of features that capture nuanced patterns not readily apparent through statistical methods alone. Domain expertise complements statistical analysis by highlighting features that may exhibit complex interactions or temporal dependencies. This holistic approach to feature selection enhances the model's sensitivity to subtle fraud indicators, thereby increasing its robustness and reliability in diverse scenarios.
+
 - Automated Selection: Utilized feature importance scores from the Random Forest model to retain significant features.
+  - Rationale: Employing feature importance scores derived from the Random Forest model facilitates an automated and objective assessment of each feature's contribution to the model's predictive capability. This method accounts for non-linear relationships and interactions between features, which are often present in complex datasets like financial transactions. Automated feature selection using model-based importance ensures that the final feature set is optimized for predictive performance. It eliminates human bias, adapts to data-driven insights, and enhances the model's ability to generalize by focusing on the most impactful features.
 
 ##### Selected Features:
 
-- trans_date_trans_time: Date and time of the transaction.
-- cc_num: Credit card number.
-- unix_time: Unix timestamp of the transaction.
-- merchant: Merchant name.
-- category: Transaction category.
-- amt: Transaction amount.
-- merch_lat: Merchant latitude.
-- merch_long: Merchant longitude.
-- time_since_last_trans: Time in seconds since the last transaction.
+- `trans_date_trans_time`: Date and time of the transaction.
+  - Justification: Temporal patterns, such as transactions occurring at unusual hours or in quick succession, can be indicative of fraudulent activity.
+- `cc_num`: Credit card number.
+  - Justification: Unique identifiers help in tracking transactional behavior associated with specific accounts, aiding in the detection of anomalies and bolstering the predictive power of other features, such as `time_since_last_trans`.
+- `unix_time`: Unix timestamp of the transaction.
+  - Justification: Provides a standardized time format for temporal analysis and feature engineering, facilitating the extraction of time-based patterns.
+- `merchant`: Merchant name.
+  - Justification: Certain merchants may be more prone to fraudulent transactions, and analyzing merchant-related data can uncover suspicious activities.
+- `category`: Transaction category.
+  - Justification: Categorizing transactions helps in identifying unusual spending behaviors within specific sectors, which may signal fraud.
+- `amt`: Transaction amount.
+  - Justification: Abnormally high or low transaction amounts compared to an account's typical behavior can be a red flag for fraud.
+- `merch_lat`: Merchant latitude.
+  - Justification: Geographical data assists in detecting unusual transaction locations that deviate from the cardholder's usual patterns.
+- `merch_long`: Merchant longitude.
+  - Justification: Combined with latitude, it provides precise location data for spatial analysis of transaction patterns.
+- `time_since_last_trans`: Time in seconds since the last transaction.
+  - Justification: Rapid, short intervals between transactions may indicate automated or fraudulent activities, especially if inconsistent with the cardholder's typical behavior.
 
 ### Dataset Design
 
@@ -606,14 +620,32 @@ Training logs provide ongoing visibility into the model development lifecycle, a
 - Consistency: Maintained uniform preprocessing steps across training and testing sets.
 - Scalability: Designed the pipeline to accommodate increasing data volumes without significant performance degradation.
 
+##### Rationale:
+
+The design of the dataset is a cornerstone of the model's ability to generalize and perform reliably in real-world scenarios. The following aspects were meticulously considered to optimize the dataset's structure and quality:
+
+- Training and Testing Split (80/20): Allocating 80% of the data to the training set provides the model with sufficient examples to learn complex patterns associated with both fraudulent and legitimate transactions. Reserving 20% for testing ensures that the model's performance is evaluated on a substantial and unbiased subset, facilitating an accurate assessment of its generalization capabilities.
+
+- Class Balancing with SMOTE: Financial fraud detection typically suffers from significant class imbalance, with fraudulent transactions being a minority. Employing Synthetic Minority Over-sampling Technique (SMOTE) addresses this imbalance by generating synthetic samples of the minority class. This technique prevents the model from becoming biased towards the majority class, enhancing its sensitivity to detecting fraudulent activities without inflating false positive rates.
+
+- Data Recency: Ensuring that the dataset includes the latest transaction patterns captures contemporary fraud tactics, which are continually evolving. This temporal relevance is crucial for maintaining the model's effectiveness in identifying new and emerging fraud schemes, thereby reducing the risk of obsolescence.
+
+- Consistency in Preprocessing: Maintaining uniform preprocessing steps across training and testing sets eliminates discrepancies that could lead to data leakage or inconsistent model performance. Consistent handling of features ensures that the model learns from accurately processed data, enhancing its reliability and robustness.
+
+- Scalability: Designing the data pipeline to accommodate increasing data volumes without significant performance degradation ensures that the system remains efficient as transaction data grows. Scalability considerations facilitate seamless integration of larger datasets in the future, supporting continuous model improvement and adaptation to expanding operational demands.
+
 ### Model Evaluation and Selection
 Model Chosen: Random Forest Classifier
 
 ##### Rationale:
 
-- Performance: Demonstrated strong performance metrics, especially in handling imbalanced datasets.
-- Interpretability: Offers insights into feature importance, aiding in understanding model decisions.
-- Scalability: Efficiently handles large datasets and complex feature interactions.
+The selection of an appropriate machine learning model is critical for achieving high accuracy and reliability in fraud detection. The Random Forest Classifier was chosen after careful consideration of its inherent strengths and suitability for the task at hand.
+
+- Performance: Random Forests are renowned for their strong performance, particularly in handling imbalanced datasets like those encountered in fraud detection. Their ensemble nature, which aggregates predictions from multiple decision trees, reduces variance and enhances predictive accuracy. This makes Random Forests adept at distinguishing between subtle patterns indicative of fraud without overfitting to noise in the data.
+
+- Interpretability: One of the key advantages of Random Forests is their ability to provide insights into feature importance. This interpretability is invaluable in financial applications, where understanding the rationale behind model decisions is essential for regulatory compliance and building stakeholder trust. By identifying which features most significantly influence predictions, Random Forests facilitate informed decision-making and continuous model refinement.
+
+- Scalability: Random Forests efficiently handle large datasets and complex feature interactions, making them scalable for high-volume transaction environments. Their parallelizable nature allows for optimized training and prediction times, ensuring that the system remains responsive and efficient even as data volumes increase.
 
 ##### Evaluation Process:
 
