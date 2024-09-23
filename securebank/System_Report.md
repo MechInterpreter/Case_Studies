@@ -35,7 +35,7 @@ The SecureBank Transaction Fraud Detection System is meticulously designed to ad
   - **Result:** Enhanced precision to 54% and recall to 69%, marking significant improvements over previous iterations.
   - **Rationale:** One of the critical challenges in fraud detection is the class imbalance inherent in the dataset, where legitimate transactions significantly outnumber fraudulent ones. In fact, fraudulent transactions amounted to approximately .4% of the total dataset. Initially, the model struggled to identify fraudulent transactions, resulting in a precision and recall of 0%—indicating that the model failed to detect any fraudulent activities.
   
-  To address this, the Synthetic Minority Over-sampling Technique (SMOTE) was implemented within the pipeline.py module to balance the dataset effectively. Below is an in-depth explanation of how SMOTE was integrated and its impact on improving model performance.
+  To address this, the Synthetic Minority Over-sampling Technique (SMOTE) was implemented within the `pipeline.py` module to balance the dataset effectively. Below is an in-depth explanation of how SMOTE was integrated and its impact on improving model performance.
 
     #### How SMOTE Improved Model Performance
     ##### Addressing Class Imbalance:
