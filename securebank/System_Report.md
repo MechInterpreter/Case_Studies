@@ -20,6 +20,7 @@
 - [Post-deployment Policies](#post-deployment-policies)
   - [Monitoring and Maintenance Plan](#monitoring-and-maintenance-plan)
   - [Fault Mitigation Strategies](#fault-mitigation-strategies)
+  - [Integration with Current Implementation](#integration-with-current-implementation)
 
 ---
 
