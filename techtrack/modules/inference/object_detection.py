@@ -119,21 +119,35 @@ class Model():
 
         return filtered_bboxes, filtered_class_ids, filtered_scores
 
-    # Function to draw bounding boxes on an image
-    def draw_bboxes(self, image, bboxes, class_ids, scores):
-        for bbox, class_id, score in zip(bboxes, class_ids, scores):
-            x, y, w, h = bbox
-            label = f"{self.class_labels[class_id]}: {score:.2f}"
-            color = self.colors[class_id].tolist()
-            
-            # Draw bounding box
-            cv.rectangle(image, (x, y), (x + w, y + h), color, 2)
-            
-            # Calculate text size for background rectangle
-            (text_width, text_height), baseline = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            cv.rectangle(image, (x, y - text_height - baseline), (x + text_width, y), color, -1)
-            
-            # Put label text
-            cv.putText(image, label, (x, y - baseline), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+# Function to draw bounding boxes on an image
+def draw_bboxes(image, bboxes, class_ids, scores=None):
+    class_labels = ['barcode', 'car', 'cardboard box', 'fire', 'forklift', 'freight container', 'gloves', 
+                             'helmet', 'ladder', 'license plate', 'person', 'qr code', 'road sign', 'safety vest', 
+                             'smoke', 'traffic cone', 'traffic light', 'truck', 'van', 'wood pallet']
     
-        return image
+    colors = np.random.randint(0, 255, size=(len(class_labels), 3), dtype='uint8')
+    
+    # For ground truths, create a list of 1.00 (100% confidence) for each bounding box
+    if scores is None:
+        scores = [1.00] * len(bboxes)
+        
+    for bbox, class_id, score in zip(bboxes, class_ids, scores):
+        x, y, w, h = bbox
+        
+        # Ensure all coordinates are integers
+        x, y, w, h = int(x), int(y), int(w), int(h)
+        
+        label = f"{class_labels[class_id]}: {score:.2f}"
+        color = colors[class_id].tolist()
+        
+        # Draw bounding box
+        cv.rectangle(image, (x, y), (x + w, y + h), color, 2)
+        
+        # Calculate text size for background rectangle
+        (text_width, text_height), baseline = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        cv.rectangle(image, (x, y - text_height - baseline), (x + text_width, y), color, -1)
+        
+        # Put label text
+        cv.putText(image, label, (x, y - baseline), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+
+    return image
