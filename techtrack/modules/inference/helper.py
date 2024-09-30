@@ -46,14 +46,24 @@ def calculate_iou(pred_box, gt_box):
     
     return iou
 
-# Calculate precision and recall
-def calculate_pr(pred_bboxes, pred_class_ids, pred_scores, gt_bboxes, gt_class_ids, iou_threshold=0.5):
-    tp = 0
-    fp = 0
-    fn = len(gt_bboxes)  # All ground truth boxes are initially false negatives
-
-    matched_gt = set()
-
+def calculate_pr(pred_bboxes, pred_class_ids, pred_scores, gt_bboxes, gt_class_ids, num_classes, iou_threshold=0.5):
+    # Initialize per-class true positives, false positives, and false negatives
+    tp = {class_id: 0 for class_id in range(num_classes)}
+    fp = {class_id: 0 for class_id in range(num_classes)}
+    fn = {class_id: 0 for class_id in range(num_classes)}
+    
+    # Initialize sets to keep track of matched ground truth boxes per class
+    matched_gt = {class_id: set() for class_id in range(num_classes)}
+    
+    # Count ground truth boxes per class
+    gt_counts = {class_id: 0 for class_id in range(num_classes)}
+    for class_id in gt_class_ids:
+        gt_counts[class_id] += 1
+    
+    # Initialize false negatives with all ground truth boxes per class
+    for class_id in range(num_classes):
+        fn[class_id] = gt_counts[class_id]
+    
     # Sort predictions by scores (confidence)
     sorted_indices = np.argsort(pred_scores)[::-1]
     pred_bboxes = [pred_bboxes[i] for i in sorted_indices]
@@ -63,9 +73,9 @@ def calculate_pr(pred_bboxes, pred_class_ids, pred_scores, gt_bboxes, gt_class_i
     for pred_bbox, pred_class_id in zip(pred_bboxes, pred_class_ids):
         best_iou = 0
         best_gt_idx = -1
-        # Compare to all ground truth boxes
+        # Compare to all ground truth boxes of the same class
         for gt_idx, (gt_bbox, gt_class_id) in enumerate(zip(gt_bboxes, gt_class_ids)):
-            if gt_class_id == pred_class_id and gt_idx not in matched_gt:
+            if gt_class_id == pred_class_id and gt_idx not in matched_gt[pred_class_id]:
                 iou = calculate_iou(pred_bbox, gt_bbox)
                 if iou > best_iou:
                     best_iou = iou
@@ -73,17 +83,21 @@ def calculate_pr(pred_bboxes, pred_class_ids, pred_scores, gt_bboxes, gt_class_i
         
         # Determine if prediction is TP or FP
         if best_iou >= iou_threshold:
-            tp += 1
-            fn -= 1
-            matched_gt.add(best_gt_idx)
+            tp[pred_class_id] += 1
+            fn[pred_class_id] -= 1
+            matched_gt[pred_class_id].add(best_gt_idx)
         else:
-            fp += 1
-
-    # Calculate precision and recall
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+            fp[pred_class_id] += 1
     
-    return precision, recall
+    # Calculate overall precision and recall
+    total_tp = sum(tp.values())
+    total_fp = sum(fp.values())
+    total_fn = sum(fn.values())
+    
+    precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
+    recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0
+    
+    return precision, recall, tp, fp, fn
 
 # Calculate average precision (AP)
 def calculate_ap(precision, recall):
@@ -122,6 +136,38 @@ def calculate_11pi(precision, recall):
         interpolated_precision.append(p_at_r)
     
     return np.array(interpolated_precision)
+
+# Calculate per-class precision, recall, and F1-score
+def calculate_precision_recall_f1(metrics, class_ids_list=list(range(20))):
+    per_class_metrics = {}
+    for class_id in class_ids_list:
+        tp = metrics['tp'][class_id]
+        fp = metrics['fp'][class_id]
+        fn = metrics['fn'][class_id]
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f1_score = (2 * precision * recall) / (precision + recall) \
+            if (precision + recall) > 0 else 0.0
+        per_class_metrics[class_id] = {
+            'precision': precision,
+            'recall': recall,
+            'f1_score': f1_score,
+            'tp': tp,
+            'fp': fp,
+            'fn': fn,
+            'gt_count': metrics['gt_counts'][class_id]
+        }
+    return per_class_metrics
+
+# Specificity per class
+def calculate_specificity(metrics, class_ids_list=list(range(20))):
+    per_class_specificity = {}
+    for class_id in class_ids_list:
+        tn = sum(metrics['tp'].values()) - metrics['tp'][class_id]
+        fp = metrics['fp'][class_id]
+        specificity = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+        per_class_specificity[class_id] = specificity
+    return per_class_specificity
 
 # Function to read the ground truth data from the text file
 def get_ground_truth(file_path):
