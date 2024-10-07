@@ -12,38 +12,37 @@ def denormalize(box, img_width=640, img_height=640):
     
     return [int(x1), int(y1), int(abs_width), int(abs_height)]
 
-# Updated IoU calculation
 def calculate_iou(pred_box, gt_box):
     # Extract coordinates of the bounding boxes
     xA1, yA1, wA, hA = pred_box
     xB1, yB1, wB, hB = gt_box
-    
+
     # Calculate bottom-right coordinates of the boxes
     xA2 = xA1 + wA
     yA2 = yA1 + hA
     xB2 = xB1 + wB
     yB2 = yB1 + hB
-    
+
     # Compute the coordinates of the intersection rectangle
     xI1 = max(xA1, xB1)
     yI1 = max(yA1, yB1)
     xI2 = min(xA2, xB2)
     yI2 = min(yA2, yB2)
-    
+
     # Compute the width and height of the intersection rectangle
     inter_width = max(0, xI2 - xI1)
     inter_height = max(0, yI2 - yI1)
-    
+
     # Compute the area of intersection
     inter_area = inter_width * inter_height
-    
+
     # Compute the area of both bounding boxes
     boxA_area = wA * hA
     boxB_area = wB * hB
-    
+
     # Compute the IoU, handling division by zero
     iou = inter_area / float(boxA_area + boxB_area - inter_area) if (boxA_area + boxB_area - inter_area) > 0 else 0.0
-    
+
     return iou
 
 def calculate_pr(pred_bboxes, pred_class_ids, pred_scores, gt_bboxes, gt_class_ids, num_classes, iou_threshold=0.5):

@@ -46,18 +46,18 @@ class Model():
     def predict(self, preprocessed_frame):
         # Set preprocessed frame as input to the network
         self.net.setInput(preprocessed_frame)
-        
+
         # Start timer
         t0 = time.time()
-        
+
         # Perform forward pass for detections
         outputs = self.net.forward(self.ln)
-        
+
         # End timer
         t = time.time()
-        
+
         print(f'Inference time elapsed: {t - t0:.2f} seconds')
-        
+
         # Extract all detections without applying threshold
         bboxes = []
         scores = []
@@ -69,28 +69,28 @@ class Model():
                 score = detection[5:]  # Class scores
                 class_id = np.argmax(score)  # Predicted class ID
                 confidence = score[class_id]  # Confidence score of the predicted class
-                
+
                 # Scale bounding box back to the original image size
                 box = detection[:4] * np.array([w, h, w, h])
                 (centerX, centerY, width, height) = box.astype('int')
-                
+
                 # Calculate top-left corner of the bounding box
                 x = int(centerX - (width / 2))
                 y = int(centerY - (height / 2))
-                
+
                 # Append box, score, and class ID to their respective lists
                 bboxes.append([x, y, int(width), int(height)])
                 scores.append(float(confidence))
                 class_ids.append(class_id)
-        
+
         return bboxes, class_ids, scores
-        
+
     def post_process(self, boxes, ids, confidences, frame, score_threshold=0.5):
         # Lists to store the filtered results
         filtered_bboxes = []
         filtered_scores = []
         filtered_class_ids = []
-        
+
         # Get dimensions of the original image
         h, w = frame.shape[:2]
 
