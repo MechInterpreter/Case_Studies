@@ -20,5 +20,8 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Create output directory inside the container
+RUN mkdir -p /app/output_directory
+
 # Run the inference service as the default command
 CMD ["python", "test.py"]

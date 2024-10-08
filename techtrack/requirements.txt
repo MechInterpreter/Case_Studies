@@ -1,5 +1,5 @@
 opencv-python-headless
-numpy                   
+numpy            
 matplotlib              
 seaborn                 
 ffmpeg-python==0.2.0                  
