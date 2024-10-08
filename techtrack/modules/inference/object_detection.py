@@ -1,3 +1,4 @@
+import os
 import time
 import cv2 as cv
 import numpy as np
@@ -32,54 +33,68 @@ class Model():
              yield frame  # Yield original frames
     
     def preprocess(self, frame, input_size=(416, 416)):
+        # Convert frame to NumPy array
+        if not isinstance(frame, np.ndarray):
+            frame = np.array(frame)
+        
         # Save the original frame for later use
         original_frame = frame.copy()
         
-        # Resize frame to model's expected input size
-        resized_frame = cv.resize(frame, input_size)
-        
-        # Create blob object from resized_frame
-        preprocessed_frame = cv.dnn.blobFromImage(resized_frame, 1/255.0, input_size, swapRB=True, crop=False)
+        # Create blob object from frame, including resizing
+        preprocessed_frame = cv.dnn.blobFromImage(frame, 1/255.0, input_size, swapRB=True, crop=False)
         
         return preprocessed_frame, original_frame
             
-    def predict(self, preprocessed_frame):
+    def predict(self, preprocessed_frame, original_frame):
         # Set preprocessed frame as input to the network
         self.net.setInput(preprocessed_frame)
-
+        
         # Start timer
         t0 = time.time()
-
+        
         # Perform forward pass for detections
         outputs = self.net.forward(self.ln)
-
+        
         # End timer
         t = time.time()
-
         print(f'Inference time elapsed: {t - t0:.2f} seconds')
 
         # Extract all detections without applying threshold
         bboxes = []
         scores = []
         class_ids = []
-        h, w = preprocessed_frame.shape[2:]  # Get frame dimensions
+        orig_h, orig_w = original_frame.shape[:2]  # Get original frame dimensions
+        input_h, input_w = preprocessed_frame.shape[2:]  # Get preprocessed input dimensions
 
         for output in outputs:
             for detection in output:
                 score = detection[5:]  # Class scores
                 class_id = np.argmax(score)  # Predicted class ID
                 confidence = score[class_id]  # Confidence score of the predicted class
+                
+                # Extract bounding box center, width, and height from detection
+                centerX, centerY, width, height = detection[:4]
 
-                # Scale bounding box back to the original image size
-                box = detection[:4] * np.array([w, h, w, h])
-                (centerX, centerY, width, height) = box.astype('int')
+                # Scale back the bounding box to the original image size
+                x_center_scaled = int(centerX * orig_w)
+                y_center_scaled = int(centerY * orig_h)
+                width_scaled = int(width * orig_w)
+                height_scaled = int(height * orig_h)
 
-                # Calculate top-left corner of the bounding box
-                x = int(centerX - (width / 2))
-                y = int(centerY - (height / 2))
+                # Calculate top-left and bottom-right corners of the bounding box
+                x_min = int(x_center_scaled - (width_scaled / 2))
+                y_min = int(y_center_scaled - (height_scaled / 2))
+                x_max = int(x_center_scaled + (width_scaled / 2))
+                y_max = int(y_center_scaled + (height_scaled / 2))
+
+                # Ensure the bounding box is within the bounds of the original image
+                x_min = max(0, min(x_min, orig_w))
+                y_min = max(0, min(y_min, orig_h))
+                x_max = max(0, min(x_max, orig_w))
+                y_max = max(0, min(y_max, orig_h))
 
                 # Append box, score, and class ID to their respective lists
-                bboxes.append([x, y, int(width), int(height)])
+                bboxes.append([x_min, y_min, x_max, y_max])
                 scores.append(float(confidence))
                 class_ids.append(class_id)
 
@@ -90,7 +105,7 @@ class Model():
         filtered_bboxes = []
         filtered_scores = []
         filtered_class_ids = []
-
+        
         # Get dimensions of the original image
         h, w = frame.shape[:2]
 
@@ -99,12 +114,13 @@ class Model():
             # Filter out weak predictions by confidence score threshold
             if confidence > score_threshold:
                 # Extract box dimensions
-                x, y, width, height = box
+                x_min, y_min, x_max, y_max = box
+                
                 # Scale bounding box back to the original image size
-                x_min = int(x)
-                y_min = int(y)
-                x_max = int(x + width)
-                y_max = int(y + height)
+                x_min = int(x_min)
+                y_min = int(y_min)
+                x_max = int(x_max)
+                y_max = int(y_max)
 
                 # Ensure the bounding box coordinates are within image bounds
                 x_min = max(0, min(x_min, w))
@@ -119,35 +135,63 @@ class Model():
 
         return filtered_bboxes, filtered_class_ids, filtered_scores
 
-# Function to draw bounding boxes on an image
 def draw_bboxes(image, bboxes, class_ids, scores=None):
     class_labels = ['barcode', 'car', 'cardboard box', 'fire', 'forklift', 'freight container', 'gloves', 
-                             'helmet', 'ladder', 'license plate', 'person', 'qr code', 'road sign', 'safety vest', 
-                             'smoke', 'traffic cone', 'traffic light', 'truck', 'van', 'wood pallet']
+                            'helmet', 'ladder', 'license plate', 'person', 'qr code', 'road sign', 'safety vest', 
+                            'smoke', 'traffic cone', 'traffic light', 'truck', 'van', 'wood pallet']
     
     colors = np.random.randint(0, 255, size=(len(class_labels), 3), dtype='uint8')
     
     # For ground truths, create a list of 1.00 (100% confidence) for each bounding box
     if scores is None:
         scores = [1.00] * len(bboxes)
-        
+    
+    # Loop through bounding boxes to draw
     for bbox, class_id, score in zip(bboxes, class_ids, scores):
-        x, y, w, h = bbox
-        
+        x_min, y_min, x_max, y_max = bbox
+
         # Ensure all coordinates are integers
-        x, y, w, h = int(x), int(y), int(w), int(h)
-        
+        x_min, y_min, x_max, y_max = int(x_min), int(y_min), int(x_max), int(y_max)
+
         label = f"{class_labels[class_id]}: {score:.2f}"
         color = colors[class_id].tolist()
-        
+
         # Draw bounding box
-        cv.rectangle(image, (x, y), (x + w, y + h), color, 2)
-        
+        cv.rectangle(image, (x_min, y_min), (x_max, y_max), color, 2)
+
         # Calculate text size for background rectangle
         (text_width, text_height), baseline = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-        cv.rectangle(image, (x, y - text_height - baseline), (x + text_width, y), color, -1)
-        
+        cv.rectangle(image, (x_min, y_min - text_height - baseline), (x_min + text_width, y_min), color, -1)
+
         # Put label text
-        cv.putText(image, label, (x, y - baseline), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+        cv.putText(image, label, (x_min, y_min - baseline), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
     return image
+
+def save_image_with_bboxes(image, filename):
+    cv.imwrite(filename, image)
+    print(f"Image saved as {filename}")
+
+def save_predictions_yolo(bboxes, class_ids, scores, image_shape, filename):
+    with open(filename, 'w') as f:
+        for bbox, class_id, score in zip(bboxes, class_ids, scores):
+            x_min, y_min, x_max, y_max = bbox
+            
+            # Calculate width and height of the bounding box
+            w = x_max - x_min
+            h = y_max - y_min
+            
+            # Calculate center of the bounding box
+            x_center = x_min + w / 2
+            y_center = y_min + h / 2
+            
+            # Normalize the coordinates (YOLO format)
+            x_center /= image_shape[1]  # Divide by image width
+            y_center /= image_shape[0]  # Divide by image height
+            width = w / image_shape[1]  # Divide by image width
+            height = h / image_shape[0]  # Divide by image height
+            
+            # Write to file in YOLO format
+            f.write(f"{class_id} {x_center} {y_center} {width} {height} {score}\n")
+    
+    print(f"Predictions saved as {filename}")
