@@ -147,7 +147,7 @@ The scatter plot titled "IoU vs Detection Speed" illustrates the relationship be
 
 ![IoU vs Detection Speed](iou_vs_speed.png)
 
-- **Observation**: The scatter plot shows that most IoU values are in the approximate range of 0.25 to 0.45, with detection speeds roughly between 0.06 and 0.12 seconds. There is no clear linear relationship between IoU and detection speed, indicating that the time required for detection does not directly impact the quality of the detection, as measured by IoU.
+- **Observation**: The scatter plot shows that most IoU values are in the approximate range of 0.275 to 0.475, with detection speeds roughly between 0.045 and 0.1 seconds. There is no clear linear relationship between IoU and detection speed, indicating that the time required for detection does not directly impact the quality of the detection, as measured by IoU.
 
 - **Insight**: The scatter plot reveals that the system is capable of achieving relatively high detection speeds, with the majority of detections taking less than 0.1 seconds. However, there is considerable variation in IoU values, suggesting that the detection speed alone is not a good predictor of detection quality. Factors such as object size, occlusion, and image quality likely contribute more significantly to the IoU variation.
 
