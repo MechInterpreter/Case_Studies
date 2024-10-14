@@ -48,7 +48,7 @@ The Interface Service is responsible for processing video streams via the UDP pr
 ```mermaid
 graph LR
     A[Video Stream via UDP] --> B[Interface Service]
-    B --> C[Docker Container (Inference Service)]
+    B --> C[Docker Container - Inference Service]
     C --> D[Processed Frames and Predictions]
 ```
 
