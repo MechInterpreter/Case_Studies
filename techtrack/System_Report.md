@@ -64,7 +64,7 @@ Online metrics assess the performance of the system during real-time deployment.
 
 ## Analysis of System Parameters and Configurations
 
-To address the analysis of significant design decisions for a system that involves both Inference and Rectification Services, five critical design choices have been identified. These decisions are fundamental in shaping the performance, reliability, and scalability of the system, and include system performance on specific classes, loss distribution versus detection speed, image size analysis, data augmentation, and lambda settings.
+To address the analysis of significant design decisions for a system that involves both Inference and Rectification Services, five critical design choices have been identified. These decisions are fundamental in shaping the performance, reliability, and scalability of the system, and include system performance on specific classes, loss distribution and detection speed, image size analysis, data augmentation, and lambda settings.
 
 ### 1. Inference: System Performance on Specific Classes
 
