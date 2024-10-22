@@ -2,9 +2,9 @@ import os
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 import numpy as np
 from PIL import Image, UnidentifiedImageError
-from preprocess import Preprocessing
+from processing import Preprocessing
 from embedding import Embedding
-from indexing import FaissIndex
+from index import FaissIndex
 from search import FaissSearch
 import faiss
 import pickle
@@ -17,6 +17,7 @@ class Pipeline:
         self.embedding = Embedding(pretrained=pretrained, device=device)
         self.faiss_index = FaissIndex(index_type=index_type)
         self.faiss_search = None  # Will be initialized after index is built
+        self.history = []  # List to store search history
 
     def _encode(self, image):
         preprocessed_image = self.preprocessing.process(image)
@@ -89,6 +90,14 @@ class Pipeline:
                 result['embedding'] = self.faiss_index.index.reconstruct(int(indices[0][i]))
                 result['distance'] = float(distances[0][i])  # Convert to Python float for serialization
                 results.append(result)
+                
+            # Store search record in history
+            search_record = {
+                'probe_filename': probe.filename if hasattr(probe, 'filename') else 'unknown',
+                'k': k,
+                'results': results
+            }
+            self.history.append(search_record)
 
             logger.info(f"Found {len(results)} results")
             return results
