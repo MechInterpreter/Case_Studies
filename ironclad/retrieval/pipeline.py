@@ -35,7 +35,7 @@ class Pipeline:
                 if file.lower().endswith(('.png', '.jpg', '.jpeg')):
                     try:
                         image = Image.open(image_path)
-                        embedding = self.__encode(image)
+                        embedding = self._encode(image)
                         embeddings.append(embedding)
                         metadata.append({
                             'name': os.path.basename(os.path.dirname(image_path)),
@@ -68,7 +68,7 @@ class Pipeline:
                 raise ValueError("Probe must be a PIL Image object")
 
             # Encode the probe image
-            probe_embedding = self.__encode(probe)
+            probe_embedding = self._encode(probe)
 
             # Ensure probe_embedding is a numpy array with correct shape
             if not isinstance(probe_embedding, np.ndarray):
@@ -121,7 +121,7 @@ class Pipeline:
                     image_path = os.path.join(root, file)
                     try:
                         image = Image.open(image_path)
-                        embedding = self.__encode(image)
+                        embedding = self._encode(image)
                         embeddings.append(embedding)
                         metadata.append({
                             'name': os.path.basename(os.path.dirname(image_path)),
@@ -146,7 +146,7 @@ class Pipeline:
 
         embeddings = np.array(embeddings).astype('float32')
         self.faiss_index.add_embeddings(embeddings, metadata=metadata)
-        self.__save_embeddings()
+        self._save_embeddings()
 
     def load_gallery_index(self):
         self.faiss_index.load('storage/catalog/embeddings.index', 'storage/catalog/metadata.pkl')
