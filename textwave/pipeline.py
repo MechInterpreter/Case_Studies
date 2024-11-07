@@ -94,18 +94,3 @@ class Pipeline:
 
         # Generate the answer using the retrieved context
         return self.generate_answer(query, neighbors, rerank)
-    
-if __name__ == "__main__":
-    # Test usage
-    corpus_directory = "C:/Users/walde/systems/textwave/storage/corpus"
-    pipeline = Pipeline()
-    pipeline.preprocess_corpus(corpus_directory)
-
-    # Test query
-    question = "Who was John Adams married to?"
-    answer = pipeline.query(question)
-    print(answer)
-
-    question = "When did Roosevelt take a public automobile ride?"
-    answer = pipeline.query(question)
-    print(answer)
