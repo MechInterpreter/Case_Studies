@@ -74,21 +74,14 @@ class Pipeline:
         neighbors = [meta["text"] for meta in metadata if meta]
         return neighbors
 
-    def generate_answer(self, query, context, rerank=True, reranker_type="hybrid"):
+    def generate_answer(self, query, context, rerank=True):
         if not context:
             print("No context found for the query.")
             return "No context"
         
         # Apply reranking if specified and there is more than one context to rerank
         if rerank and len(context) > 1:
-            if reranker_type == "hybrid":
-                context = self.reranker.rerank(query, context, strategy="hybrid")
-            elif reranker_type == "bm25":
-                context = self.reranker.rerank(query, context, strategy="bm25")
-            elif reranker_type == "cross-encoder":
-                context = self.reranker.rerank(query, context, strategy="cross-encoder")
-            else:
-                print(f"Unknown reranker type '{reranker_type}', skipping reranking.")
+            context, _, _ = self.reranker.rerank(query, context)
 
         # Print the context to check if it's relevant
         print(f"Context used for answering '{query}':")
@@ -98,7 +91,7 @@ class Pipeline:
 
         return self.qa_generator.generate_answer(query, context)
 
-    def query(self, query, k=5, rerank=True, reranker_type="hybrid"):
+    def query(self, query, k=5, rerank=True):
         # Encode the query
         query_embedding = self.__encode(query)
 
@@ -106,4 +99,4 @@ class Pipeline:
         neighbors = self.search_neighbors(query_embedding, k)
 
         # Generate the answer using the retrieved context and reranker type
-        return self.generate_answer(query, neighbors, rerank, reranker_type)
+        return self.generate_answer(query, neighbors, rerank)
