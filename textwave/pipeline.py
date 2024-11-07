@@ -13,6 +13,7 @@ class Pipeline:
         self.index = FaissIndex(index_type='brute_force')  # Initialize FAISS index here
         self.qa_generator = QA_Generator()
         self.context_data = []
+        self.reranker = Reranker()
     
     def preprocess_corpus(self, corpus_directory, chunking_strategy='sentence', fixed_length=None, overlap_size=2):
         for filename in os.listdir(corpus_directory):
@@ -73,13 +74,25 @@ class Pipeline:
         neighbors = [meta["text"] for meta in metadata if meta]
         return neighbors
 
-    def generate_answer(self, query, context, rerank=True):
+    def generate_answer(self, query, context, rerank=True, reranker_type="hybrid"):
         if not context:
             print("No context found for the query.")
             return "No context"
+        
+        # Apply reranking if specified and there is more than one context to rerank
+        if rerank and len(context) > 1:
+            if reranker_type == "hybrid":
+                context = self.reranker.rerank(query, context, strategy="hybrid")
+            elif reranker_type == "bm25":
+                context = self.reranker.rerank(query, context, strategy="bm25")
+            elif reranker_type == "cross-encoder":
+                context = self.reranker.rerank(query, context, strategy="cross-encoder")
+            else:
+                print(f"Unknown reranker type '{reranker_type}', skipping reranking.")
 
         # Print the context to check if it's relevant
         print(f"Context used for answering '{query}':")
+        
         for idx, ctx in enumerate(context):
             print(f"Context {idx + 1}: {ctx}")
 
@@ -92,5 +105,5 @@ class Pipeline:
         # Search for nearest neighbors
         neighbors = self.search_neighbors(query_embedding, k)
 
-        # Generate the answer using the retrieved context
-        return self.generate_answer(query, neighbors, rerank)
+        # Generate the answer using the retrieved context and reranker type
+        return self.generate_answer(query, neighbors, rerank, reranker_type)
