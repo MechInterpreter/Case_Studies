@@ -7,13 +7,13 @@ from search import FaissSearch
 import os
 
 class Pipeline:
-    def __init__(self, embedding_model='all-MiniLM-L6-v2'):
+    def __init__(self, embedding_model='all-MiniLM-L6-v2', reranker_type='hybrid'):
         self.processor = DocumentProcessing()
         self.embedder = Embedding(embedding_model)
-        self.index = FaissIndex(index_type='brute_force')  # Initialize FAISS index here
+        self.index = FaissIndex(index_type='brute_force')
         self.qa_generator = QA_Generator()
         self.context_data = []
-        self.reranker = Reranker()
+        self.reranker = Reranker(type=reranker_type)
     
     def preprocess_corpus(self, corpus_directory, chunking_strategy='sentence', fixed_length=None, overlap_size=2):
         for filename in os.listdir(corpus_directory):
