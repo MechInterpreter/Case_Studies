@@ -18,6 +18,8 @@ class Pipeline:
     def preprocess_corpus(self, corpus_directory, chunking_strategy='sentence', fixed_length=None, overlap_size=2):
         for filename in os.listdir(corpus_directory):
             file_path = os.path.join(corpus_directory, filename)
+
+            # Chunking strategy
             if chunking_strategy == 'sentence':
                 chunks = self.processor.sentence_chunking(file_path, overlap_size)
             elif chunking_strategy == 'fixed-length' and fixed_length is not None:
@@ -43,6 +45,7 @@ class Pipeline:
                 self.vector_dimension = encoded_chunks.shape[1]
                 metadata = [{"document": filename, "chunk": i, "text": chunk} for i, chunk in enumerate(chunks)]
                 self.index.add_embeddings(encoded_chunks, metadata=metadata)
+                print(f"Added {len(encoded_chunks)} embeddings for '{filename}' to the FAISS index.")
             else:
                 print(f"No embeddings generated for '{filename}'.")
 
@@ -55,12 +58,23 @@ class Pipeline:
         
     def load_index(self, faiss_path="faiss.index", metadata_path="metadata.pkl"):
         self.index = FaissIndex()
-        self.index.load(faiss_path, metadata_path)
+        try:
+            self.index.load(faiss_path, metadata_path)
+            if not hasattr(self.index, 'index') or self.index.index is None:
+                print("Failed to load FAISS index. Index is None.")
+            else:
+                print("FAISS index loaded successfully.")
+        except Exception as e:
+            print(f"Error loading index: {str(e)}")
 
     def __encode(self, query):
         return self.embedder.encode([query])
 
     def search_neighbors(self, query_embedding, k=10):
+        if not hasattr(self.index, 'index') or self.index.index is None:
+            print("No FAISS index found. Cannot perform search.")
+            return []
+        
         faiss_search = FaissSearch(self.index, metric="euclidean")
         distances, indices, metadata = faiss_search.search(query_embedding, k)
 
@@ -74,29 +88,39 @@ class Pipeline:
         neighbors = [meta["text"] for meta in metadata if meta]
         return neighbors
 
-    def generate_answer(self, query, context, rerank=True):
+    def generate_answer(self, query, context, rerank=True, rerank_top_k=5):
         if not context:
             print("No context found for the query.")
             return "No context"
-        
+
         # Apply reranking if specified and there is more than one context to rerank
         if rerank and len(context) > 1:
             context, _, _ = self.reranker.rerank(query, context)
 
+            # Filter top k after reranking
+            context = context[:rerank_top_k]
+
         # Print the context to check if it's relevant
-        print(f"Context used for answering '{query}':")
-        
+        print(f"Top {rerank_top_k} context(s) used for answering '{query}':")
         for idx, ctx in enumerate(context):
             print(f"Context {idx + 1}: {ctx}")
 
         return self.qa_generator.generate_answer(query, context)
 
-    def query(self, query, k=5, rerank=True):
+    def query(self, query, k=5, rerank=True, rerank_top_k=None):
         # Encode the query
         query_embedding = self.__encode(query)
 
         # Search for nearest neighbors
         neighbors = self.search_neighbors(query_embedding, k)
 
-        # Generate the answer using the retrieved context and reranker type
-        return self.generate_answer(query, neighbors, rerank)
+        # Apply reranking if specified
+        if rerank and len(neighbors) > 1:
+            neighbors, _, _ = self.reranker.rerank(query, neighbors)
+
+            # If rerank_top_k is specified, filter the top-k reranked contexts
+            if rerank_top_k:
+                neighbors = neighbors[:rerank_top_k]
+
+        # Generate the answer using the retrieved and optionally reranked context
+        return self.generate_answer(query, neighbors)
