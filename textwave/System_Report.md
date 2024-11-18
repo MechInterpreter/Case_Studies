@@ -42,16 +42,16 @@ The Interface Service connects users and administrators to the TextWave RAG syst
 
 ```mermaid
 graph TD
-    A[User Query or Corpus Action] --> B[Query Endpoint (/query)]
+    A[User Query or Corpus Action] --> B[Query Endpoint - query]
     B --> C[Extraction Service]
     C --> D[Retrieval Service]
     D --> E[Generation Service]
     E --> F[Answer Returned to User]
-    G[Set Corpus Directory (/set_corpus_directory)] --> H[Corpus Directory Updated]
-    I[Add Document (/add_document)] --> J[Document Uploaded to Corpus]
+    G[Set Corpus Directory - set_corpus_directory] --> H[Corpus Directory Updated]
+    I[Add Document - add_document] --> J[Document Uploaded to Corpus]
     J --> K[Extraction and Index Update]
-    L[Process and Save Corpus (/process_and_save_corpus)] --> K
-    M[Load Index (/load_index)] --> N[FAISS Index Loaded]
+    L[Process and Save Corpus - process_and_save_corpus] --> K
+    M[Load Index - load_index] --> N[FAISS Index Loaded]
 ```
 
 # Metrics Definition
