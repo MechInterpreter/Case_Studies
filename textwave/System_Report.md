@@ -27,14 +27,12 @@ graph TD
 ```
 
 ## Generation Service
-The Generation Service synthesizes human-readable answers from the retrieved contexts and the query. The Context Fusion Module concatenates the top-k contexts into a single input for the Answer Generation Module, which employs a transformer-based model (e.g., Mistral) to generate responses. This service incorporates mechanisms to mitigate hallucinations by ensuring answers align strictly with retrieved contexts. Configurable parameters include the generation model, response temperature, and strategies for hallucination mitigation. This modular design allows the service to adapt to use cases ranging from direct factual lookups to complex narrative generation.
+The Generation Service generates accurate answers by leveraging the retrieved contexts and the user query. Using the QA_Generator class, the service accepts the top-k contexts as input and combines them into a structured prompt for the Mistral API. This prompt strictly adheres to the query and context provided, ensuring that the generated answers align with the available information and avoid hallucination. Configurable parameters, such as the temperature and the transformer model, allow fine-tuning of the response generation to meet specific use case requirements. The service is designed for scalability and adaptability, supporting diverse question-answering needs, from factual queries to nuanced discussions.
 
 ```mermaid
 graph TD
-    A[Refined Top-k Neighbors] --> B[Context Fusion Module]
-    B --> C[Concatenated Context]
-    C --> D[Answer Generation Module]
-    D --> E[Generated Answer]
+    A[Refined Top-k Neighbors] --> B[Answer Generation Module]
+    B --> C[Generated Answer]
 ```
 
 ## Interface Service
