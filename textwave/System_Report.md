@@ -1,3 +1,5 @@
+# "TextWave" Retrieval Augmented Generation System Report
+
 # System Design
 The TextWave Retrieval-Augmented Generation (RAG) system is structured into four modular services: Extraction, Retrieval, Generation, and Interface. Each service performs a distinct role, contributing to the overall functionality and scalability of the system. Below is a detailed description of each service along with accompanying diagrams that outline the flow of data and configurable parameters.
 
