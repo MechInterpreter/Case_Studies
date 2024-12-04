@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from collaborative import CollaborativeFiltering
 from content_based import ContentBasedFiltering
-from diversifier import Diversifier
+from diversifier import Diversifier, calculate_intra_list_diversity, calculate_shannon_entropy, calculate_novelty, calculate_pairwise_dissimilarity, calculate_gini_index, calculate_rank_diversity
 from recommender import Recommender
 
 class Pipeline:
@@ -51,13 +51,23 @@ class Pipeline:
     def initialize_models(self, ratings_file, metadata_file):
         # Initialize Collaborative Filtering model
         self.collaborative_model = CollaborativeFiltering(ratings_file=ratings_file, metadata_file=metadata_file)
-        
+
         # Initialize Content-Based Filtering model
         self.content_based_model = ContentBasedFiltering(ratings_file=ratings_file, metadata_file=metadata_file)
-        
+
         # Initialize Diversifier
-        self.diversifier = Diversifier(metadata=self.content_based_model.items_metadata)
+        # Using metadata_file and setting the number of recommendations to rerank (top_n)
+        diversity_measures = [
+            calculate_intra_list_diversity,
+            calculate_shannon_entropy
+        ]
         
+        self.diversifier = Diversifier(
+            diversity_measures=diversity_measures,
+            top_n=10,
+            metadata_file=metadata_file
+        )
+
         # Initialize Hybrid Recommender
         self.recommender = Recommender(model=self.collaborative_model)
 
